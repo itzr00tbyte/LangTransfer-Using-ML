@@ -22,14 +22,18 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 try:
     # Load pre-trained translation model and tokenizer
+    logging.debug("Loading translation model and tokenizer")
     translation_model_name = 'Helsinki-NLP/opus-mt-en-fr'
     translation_tokenizer = MarianTokenizer.from_pretrained(translation_model_name)
     translation_model = TFMarianMTModel.from_pretrained(translation_model_name)
+    logging.debug("Translation model and tokenizer loaded")
 
     # Load pre-trained style transfer model and tokenizer (assuming GPT-2 for simplicity)
+    logging.debug("Loading style transfer model and tokenizer")
     style_model_name = 'gpt2-medium'
     style_tokenizer = GPT2Tokenizer.from_pretrained(style_model_name)
     style_model = TFGPT2LMHeadModel.from_pretrained(style_model_name)
+    logging.debug("Style transfer model and tokenizer loaded")
 
     # Function to translate text
     def translate(text, model, tokenizer):
@@ -52,15 +56,17 @@ try:
     text = st.text_input("Enter the text to be translated and styled:")
 
     if text:
+        logging.debug("Translating text")
         # Translate text from English to French
         translated_text = translate(text, translation_model, translation_tokenizer)
         st.write("Translated Text:", translated_text)
 
+        logging.debug("Applying style transfer")
         # Style transfer prompt
         style_prompt = "translate to formal: "
 
         # Apply style transfer (e.g., making the text more formal)
-        styled_text = style_transfer(translated_text, style_model, style_prompt)
+        styled_text = style_transfer(translated_text, style_model, style_tokenizer, style_prompt)
         st.write("Styled Text:", styled_text)
 
 except Exception as e:
